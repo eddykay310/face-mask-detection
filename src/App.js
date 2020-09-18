@@ -4,6 +4,7 @@ import Logo from './components/logo/Logo'
 import ImageLinkForm from './components/imageLinkForm/ImageLinkForm'
 import Rank from './components/rank/Rank'
 import FaceRecognition from './components/faceRecognition/FaceRecognition'
+import SignIn from './components/signIn/SignIn'
 import './App.css';
 import Particles from 'react-particles-js';
 
@@ -30,8 +31,26 @@ class App extends Component {
     super();
     this.state = {
       input: '',
-      imageURL: ''
+      imageURL: '',
+      box: {}
     }
+  }
+  calculateFaceLocation = (data) => {
+    const detectionPoints = data.output[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('inputimage');
+    const width = Number(image.width);
+    const height = Number(image.height);
+    // console.log(width, height)
+    return {
+      leftCol: detectionPoints.left_col*width,
+      topRow: detectionPoints.top_row*height,
+      rightCol: width-(detectionPoints.right_col*width),
+      bottomRow: height-(detectionPoints.bottom_row*height),
+    }
+  }
+
+  displayBox = (box) => {
+    this.setState({box:box});
   }
   onInputChange = (event) => {
     this.setState({input: event.target.value})
@@ -39,13 +58,15 @@ class App extends Component {
 
   onSubmit = () => {
     this.setState({imageURL: this.state.input});
-  //   app.models.predict("a403429f2ddf4b49b307e318f00e528b", "this.state.input").then(
-  //   function(response) {
-  //     console.log(response.output[0].data.regions[0].region_info.bounding_box)
-  //   },
+  //   app.models.predict("a403429f2ddf4b49b307e318f00e528b", "this.state.input")
+      // .then(response => this.displayBox(this.calculateFaceLocation(response))
+      // .catch(err => console.log(err));
+
+      // console.log(response.output[0].data.regions[0].region_info.bounding_box)
   //   function(err) {
   //     // there was an error
   //   }
+
   // );
   }
   
@@ -55,10 +76,11 @@ class App extends Component {
         <Particles className='particles'
           params={particlesProps} />
         <Navigation />
+        <SignIn />
         <Logo />
         <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit}/>
         <Rank />
-        <FaceRecognition imageURL={this.state.imageURL}/>
+        <FaceRecognition box={this.state.box} imageURL={this.state.imageURL}/>
       </div>
     );
   }
