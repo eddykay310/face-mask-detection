@@ -28,6 +28,7 @@ const particlesProps =
 }
 
 class App extends Component {
+  
   constructor() {
     super();
     this.state = {
@@ -38,6 +39,7 @@ class App extends Component {
       isSignedIn: false
     }
   }
+
   calculateFaceLocation = (data) => {
     const detectionPoints = data.output[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
